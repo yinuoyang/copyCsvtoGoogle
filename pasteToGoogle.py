@@ -67,7 +67,14 @@ def main():
                 row_count = 1
                 column_count += 1
                 headers_printed = True
-            sh.update_cell(column_count, row_count, row[data])
+            val = sh.cell(column_count, row_count).value
+            if(val != row[data]):
+                try:
+                    sh.update_cell(column_count, row_count, row[data])
+                except gspread.exceptions.RequestError or gspread.exceptions.HTTPError:
+                    logging.warning("Cannot access Google Drive. Retry one more time in 10 seconds to access it.")
+                    time.sleep(10)
+                    sh.update_cell(column_count, row_count, row[data])
             row_count += 1
         column_count += 1
         row_count = 1
